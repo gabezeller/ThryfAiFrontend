@@ -80,7 +80,10 @@ export default function OutfitBuilder() {
     metadata: string;
     brand: string;
     price: number;
-}
+  }
+
+  // Store outfit results
+  const [outfitResults, setOutfitResults] = useState<Product[]>([]);
 
   const updateMap = (key: string, value: string) => {
     setImageCategories(prev => new Map(prev).set(key, value));
@@ -103,49 +106,73 @@ export default function OutfitBuilder() {
     setPreviews(previewUrls);
   };
 
-async function handleCompleter(): Promise<Product[]> {
+  async function handleCompleter(): Promise<Product[]> {
 
 
 
-  // Logic to generate outfit based on uploaded images
-  setLoading(true);
-  const queryCategories = images ? Array.from(images).map(img => (imageCategories.get(img.name))) : [];
-  console.log("Generating outfit with data:", queryCategories);
-  console.log("Images:  ", images);
+    // Logic to generate outfit based on uploaded images
+    setLoading(true);
+    const queryCategories = images ? Array.from(images).map(img => (imageCategories.get(img.name))) : [];
+    console.log("Generating outfit with data:", queryCategories);
+    console.log("Images:  ", images);
 
 
-        const url = "http://localhost:5207/api/VisualOutfit/complete-look";
-        console.log("Complete look URL:", url);
-        try {
-          const response = await fetch(url, {
+    const url = "http://localhost:5207/api/VisualOutfit/complete-look";
+    console.log("Complete look URL:", url);
+    try {
+      const response = await fetch(url, {
         method: "POST"
       });
-            
-          
-          
-          if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-            
-          }
-      
-          const json = await response.json();
-          console.log(json);
-          
-         
-        } catch (error) {
-          console.error("Error generating outfit:", error);
-          
-        } finally {
-          setLoading(false);
-        }
 
-        return [];
-}
 
-const handleGenerator = () => {
-  // Logic to generate outfit based on prompt
-  console.log("Generating outfit with prompt:", prompt);
-}
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+
+      }
+
+      const json = await response.json();
+      console.log(json);
+
+
+    } catch (error) {
+      console.error("Error generating outfit:", error);
+
+    } finally {
+      setLoading(false);
+    }
+
+    return [];
+  }
+
+  const handleGenerator = async () => {
+    // Logic to generate outfit based on prompt
+    setLoading(true);
+    console.log("Generating outfit with vibe:", prompt, "and gender:", gender);
+
+    try {
+      const url = `http://localhost:5207/api/OutfitBuilder?vibe=${encodeURIComponent(prompt)}&gender=${gender}`;
+      console.log("Outfit Builder URL:", url);
+
+      const response = await fetch(url, {
+        method: "GET"
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      const json: Product[] = await response.json();
+      console.log("Generated outfit:", json);
+      setOutfitResults(json);
+
+    } catch (error) {
+      console.error("Error generating outfit:", error);
+      setOutfitResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
 
 
@@ -166,35 +193,35 @@ const handleGenerator = () => {
 
         <Field className="mb-4">
           <FieldLabel htmlFor="picture"><FaCamera /> Pictures</FieldLabel>
-          <Input id="picture" type="file" multiple onChange={onImageUpload}/>
+          <Input id="picture" type="file" multiple onChange={onImageUpload} />
           <FieldDescription>Upload pictures of your clothing.</FieldDescription>
         </Field>
 
         <Select value={gender} onValueChange={(e) => setGender(e)} >
-        <SelectTrigger className="w-[150px] bg-white mb-4" >
-          <SelectValue placeholder="Gender" />
-        </SelectTrigger>
-        <SelectContent className="bg-white">
-          <SelectItem value="male">Male</SelectItem>
-          <SelectItem value="female">Female</SelectItem>
-          <SelectItem value="unisex">Unisex</SelectItem>
-        </SelectContent>
-      </Select>
+          <SelectTrigger className="w-[150px] bg-white mb-4" >
+            <SelectValue placeholder="Gender" />
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+            <SelectItem value="male">Male</SelectItem>
+            <SelectItem value="female">Female</SelectItem>
+            <SelectItem value="unisex">Unisex</SelectItem>
+          </SelectContent>
+        </Select>
 
         {images && Array.from(images).map((src, i) => (
           <motion.div initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }} key={i} className="flex flex-col    mb-4">
-        
-          <ClothingImageCategory img={src} updateMap={updateMap} />
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }} key={i} className="flex flex-col    mb-4">
+
+            <ClothingImageCategory img={src} updateMap={updateMap} />
 
 
           </motion.div>
 
         ))}
-      
-      <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer mt-6" onClick={handleCompleter}><FaWandMagicSparkles className="" />Generate Outfit</Button>
-    
+
+        <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer mt-6" onClick={handleCompleter}><FaWandMagicSparkles className="" />Generate Outfit</Button>
+
       </motion.div>
     );
   }
@@ -208,7 +235,7 @@ const handleGenerator = () => {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }} className="flex items-center  justify-center mt-6 h-[500px] w-[500px] flex-col items-center mx-auto shadow-lg  bg-zinc-50 font-sans dark:bg-black  rounded-lg p-10">
-        <IoArrowBackCircleOutline className="relative self-start text-2xl -left-7 -top-25 hover:cursor-pointer hover:opacity-75" onClick={() => setGeneratorVisible(false)} />
+        <IoArrowBackCircleOutline className="relative self-start text-2xl -left-7 -top-20 hover:cursor-pointer hover:opacity-75" onClick={() => setGeneratorVisible(false)} />
 
         <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-50">The AI Outfit Builder</h2>
         <p className=" flex max-w-xs text-lg leading-8 text-zinc-600 dark:text-zinc-400 mx-auto text-center">
@@ -216,11 +243,41 @@ const handleGenerator = () => {
         </p>
 
 
-      
-          <div className="grid w-full gap-2">
-      <Textarea placeholder="Type your prompt here." className="mt-6" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
-      <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer" onClick={handleGenerator}><FaWandMagicSparkles className="" /> Generate Outfit</Button>
-    </div>
+
+        <div className="grid w-full gap-2">
+          <Textarea className="focus:outline-none" placeholder="Type your vibe here (e.g., goth, casual, formal)..." value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+
+          <Select value={gender} onValueChange={(e) => setGender(e)} >
+            <SelectTrigger className="w-full bg-white mb-2" >
+              <SelectValue placeholder="Gender" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="Men">Men</SelectItem>
+              <SelectItem value="Women">Women</SelectItem>
+              <SelectItem value="Unisex">Unisex</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button
+            className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer"
+            onClick={handleGenerator}
+            disabled={loading || !prompt || !gender}
+          >
+            <FaWandMagicSparkles className="" /> {loading ? "Generating..." : "Generate Outfit"}
+          </Button>
+        </div>
+
+        {/* Results Section */}
+        {outfitResults.length > 0 && (
+          <div className="mt-8 w-full">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Your Generated Outfit</h3>
+            <div className="flex flex-col gap-4">
+              {outfitResults.map((product) => (
+                <ArticleTile key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        )}
       </motion.div>
     );
   }
@@ -307,7 +364,7 @@ const handleGenerator = () => {
 
             <button className="flex h-[500px] flex-col shadow-[5px_5px_0px_rgba(0,0,0,1)] w-8/10 h-1/2 mx-auto max-w-xs text-base items-center  overflow-hidden justify-center  bg-gradient-to-tr from-amber-300  to-amber-400 rounded-lg
          hover:cursor-pointer hover:opacity-75 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]  transition-colors transition-shadow mt-10" onClick={() => setGeneratorVisible(true)}>
-               <div className="w-full h-2/3 overflow-hidden">
+              <div className="w-full h-2/3 overflow-hidden">
                 <Image src="/mannequin.webp" alt="camera" width={300} height={300} className="w-full h-full object-cover" />
               </div>
 
@@ -340,13 +397,13 @@ function ClothingImageCategory({ img, updateMap }: { img: File, updateMap: (key:
 
 
   useEffect(() => {
-    
+
   }, [category]);
 
   return (
     <div className="flex flex-row items-center mx-auto ">
-        <Image alt="clothing item" src={URL.createObjectURL(img)} className="w-32 h-32 object-cover" width={40} height={40} />
-        <Select value={category} onValueChange={(e) => {handleValueChange(e)}} >
+      <Image alt="clothing item" src={URL.createObjectURL(img)} className="w-32 h-32 object-cover" width={40} height={40} />
+      <Select value={category} onValueChange={(e) => { handleValueChange(e) }} >
         <SelectTrigger className="w-[150px] bg-white ml-4" >
           <SelectValue placeholder="Category" />
         </SelectTrigger>
@@ -359,6 +416,54 @@ function ClothingImageCategory({ img, updateMap }: { img: File, updateMap: (key:
       </Select>
     </div>
 
+  );
+}
+
+function ArticleTile({ product }: { product: Product }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-row bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden mb-4 max-w-2xl"
+    >
+      {/* Image Section */}
+      <div className="w-48 h-48 flex-shrink-0">
+        <img
+          src={product.imageUrl}
+          alt={product.productName}
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      {/* Content Section */}
+      <div className="flex flex-col p-4 flex-1">
+        {/* Header with title and price */}
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-lg font-bold text-gray-900 flex-1">
+            {product.productName}
+          </h3>
+          <span className="text-xl font-bold text-[#fc934d] ml-4">
+            ${product.price}
+          </span>
+        </div>
+
+        {/* Category and Color */}
+        <div className="flex gap-2 mb-2">
+          <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-700">
+            {product.category}
+          </span>
+          <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-700">
+            {product.color}
+          </span>
+        </div>
+
+        {/* Metadata/Reasoning */}
+        <p className="text-sm text-gray-600 line-clamp-3 italic">
+          {product.metadata}
+        </p>
+      </div>
+    </motion.div>
   );
 }
 
