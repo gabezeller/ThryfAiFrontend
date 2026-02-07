@@ -55,6 +55,7 @@ export default function OutfitBuilder() {
 
   const [generatorVisible, setGeneratorVisible] = useState<boolean>(false);
   const [completerVisible, setCompleterVisible] = useState<boolean>(false);
+  const [resultsVisible, setResultsVisible] = useState<boolean>(false);
 
   const [imageCategories, setImageCategories] = useState<Map<string, string>>(new Map());
 
@@ -106,7 +107,7 @@ export default function OutfitBuilder() {
     setPreviews(previewUrls);
   };
 
-  async function handleCompleter(): Promise<Product[]> {
+  async function handleCompleter() {
 
 
 
@@ -131,12 +132,17 @@ export default function OutfitBuilder() {
 
       }
 
-      const json = await response.json();
-      console.log(json);
+      const json: Product[] = await response.json();
+      console.log("Generated outfit:", json);
+      setOutfitResults(json);
+
+      setCompleterVisible(false);
+      setResultsVisible(true);
 
 
     } catch (error) {
       console.error("Error generating outfit:", error);
+      setOutfitResults([]);
 
     } finally {
       setLoading(false);
@@ -165,6 +171,12 @@ export default function OutfitBuilder() {
       const json: Product[] = await response.json();
       console.log("Generated outfit:", json);
       setOutfitResults(json);
+
+      setGeneratorVisible(false);
+      
+      setResultsVisible(true);
+      
+      
 
     } catch (error) {
       console.error("Error generating outfit:", error);
@@ -220,7 +232,7 @@ export default function OutfitBuilder() {
 
         ))}
 
-        <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer mt-6" onClick={handleCompleter}><FaWandMagicSparkles className="" />Generate Outfit</Button>
+        <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer mt-6" disabled={loading || !images || !gender || images.length != imageCategories.size} onClick={handleCompleter}><FaWandMagicSparkles className="" />{loading ? "Generating..." : "Generate Outfit"}</Button>
 
       </motion.div>
     );
@@ -235,6 +247,20 @@ export default function OutfitBuilder() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }} className="flex items-center  justify-center mt-6 h-[500px] w-[500px] flex-col items-center mx-auto shadow-lg  bg-zinc-50 font-sans dark:bg-black  rounded-lg p-10">
+
+        {/* Results Section */}
+        {/* {(outfitResults.length > 0 && resultsVisible) && (
+          <div className="mt-8 w-full z-10">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Your Generated Outfit</h3>
+            <div className="flex flex-col gap-4">
+              {outfitResults.map((product) => (
+                <ArticleTile key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        )} */}
+
+
         <IoArrowBackCircleOutline className="relative self-start text-2xl -left-7 -top-20 hover:cursor-pointer hover:opacity-75" onClick={() => setGeneratorVisible(false)} />
 
         <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-50">The AI Outfit Builder</h2>
@@ -267,20 +293,27 @@ export default function OutfitBuilder() {
           </Button>
         </div>
 
-        {/* Results Section */}
-        {outfitResults.length > 0 && (
-          <div className="mt-8 w-full">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Your Generated Outfit</h3>
-            <div className="flex flex-col gap-4">
-              {outfitResults.map((product) => (
-                <ArticleTile key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        )}
+  
       </motion.div>
     );
   }
+
+  const resultsSection = () => {
+    
+    return (
+        // {/* Results Section */}
+        outfitResults.length > 0  && (
+          <div className="flex flex-col items-center  w-full ">
+            <h3 className="ax-w-xs text-5xl font-bold leading-10 tracking-tight mx-auto mb-10 text-black dark:text-zinc-50 text-center">Your Generated Outfit</h3>
+            <div className="flex flex-col gap-4">
+              {outfitResults.map((product, index) => (
+                <ArticleTile idx={index} key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        )
+      );
+  };
 
 
 
@@ -343,7 +376,7 @@ export default function OutfitBuilder() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }} className={`${completerVisible || generatorVisible ? "hidden" : ""} flex flex-1 min-h-screen h-full  w-full max-w-7xl flex-col  bg-transparent dark:bg-black sm:items-start rounded-lg`}>
+          transition={{ duration: 0.6 }} className={`${completerVisible || generatorVisible || resultsVisible ? "hidden" : ""} flex flex-1 min-h-screen h-full  w-full max-w-7xl flex-col  bg-transparent dark:bg-black sm:items-start rounded-lg`}>
           <h2 className="flex max-w-xs text-5xl font-bold leading-10 tracking-tight mx-auto text-black dark:text-zinc-50 text-center">
             Complete or Build an Outfit
           </h2>
@@ -377,6 +410,7 @@ export default function OutfitBuilder() {
         </motion.div>
         {generatorVisible && outfitGenerator()}
         {completerVisible && outfitCompleter()}
+        {resultsVisible && resultsSection()}
 
       </main>
 
@@ -385,6 +419,8 @@ export default function OutfitBuilder() {
     </div>
   );
 }
+
+
 
 function ClothingImageCategory({ img, updateMap }: { img: File, updateMap: (key: string, value: string) => void }) {
   const [category, setCategory] = useState<string>("");
@@ -428,13 +464,13 @@ interface Product {
   metadata: string;
 }
 
-function ArticleTile({ product }: { product: Product }) {
+function ArticleTile({ product, idx }: { product: Product, idx: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-row bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden mb-4 max-w-2xl"
+       className={`${idx % 2 === 0 ? "ml-40" : "mr-40"} flex flex-row bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden mb-4 max-w-2xl`}
     >
       {/* Image Section */}
       <div className="w-48 h-48 flex-shrink-0">
