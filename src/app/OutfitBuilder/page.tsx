@@ -419,6 +419,15 @@ function ClothingImageCategory({ img, updateMap }: { img: File, updateMap: (key:
   );
 }
 
+interface Product {
+  productName: string;
+  price: number;
+  category: string;
+  color: string;
+  imageUrl: string;
+  metadata: string;
+}
+
 function ArticleTile({ product }: { product: Product }) {
   return (
     <motion.div
