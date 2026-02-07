@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import OutfitBuilder from "./outfitbuilder/page";
 import Header from "./Components/header";
 
 const geistSans = Geist({
@@ -27,10 +26,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Header />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[##fafafa]`}
       >
+        <Header />
         {children}
         {/* <OutfitBuilder /> */}
       </body>
