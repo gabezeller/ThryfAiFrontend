@@ -13,9 +13,17 @@ const CART_STORAGE_KEY = 'thryft-cart';
 
 export function useCart() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  // Check if we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Load cart from localStorage on mount
   useEffect(() => {
+    if (!isClient) return;
+    
     const storedCart = localStorage.getItem(CART_STORAGE_KEY);
     if (storedCart) {
       try {
@@ -25,12 +33,13 @@ export function useCart() {
         localStorage.removeItem(CART_STORAGE_KEY);
       }
     }
-  }, []);
+  }, [isClient]);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
+    if (!isClient) return;
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-  }, [cart]);
+  }, [cart, isClient]);
 
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => {
@@ -51,7 +60,9 @@ export function useCart() {
 
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem(CART_STORAGE_KEY);
+    if (isClient) {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    }
   };
 
   const isInCart = (itemId: number) => {
