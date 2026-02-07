@@ -18,7 +18,7 @@ export default function Listing() {
   const [uploadStatus, setUploadStatus] = useState<string>('');
   const [responseData, setResponseData] = useState<any>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   // Editable fields
   const [productName, setProductName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -60,8 +60,8 @@ export default function Listing() {
 
     const droppedFiles = Array.from(e.dataTransfer.files);
     const imageFiles = droppedFiles.filter(
-      (file) => 
-        file.type === 'image/jpeg' || 
+      (file) =>
+        file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
         file.name.endsWith('.jpg') ||
         file.name.endsWith('.png')
@@ -76,8 +76,8 @@ export default function Listing() {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
       const imageFiles = selectedFiles.filter(
-        (file) => 
-          file.type === 'image/jpeg' || 
+        (file) =>
+          file.type === 'image/jpeg' ||
           file.type === 'image/png' ||
           file.name.endsWith('.jpg') ||
           file.name.endsWith('.png')
@@ -99,7 +99,7 @@ export default function Listing() {
 
     try {
       const formData = new FormData();
-      
+
       // Append the single file to the FormData
       formData.append('file', files[0]);
 
@@ -107,7 +107,7 @@ export default function Listing() {
       // formData.append('userId', 'some-user-id');
       // formData.append('description', 'some description');
 
-      const response = await fetch('http://localhost:5207/api/Listing/autofill', {
+      const response = await fetch('http://50.217.45.185/api/Listing/autofill', {
         method: 'POST',
         body: formData,
         // Don't set Content-Type header - browser will set it automatically with boundary
@@ -122,7 +122,7 @@ export default function Listing() {
       const result = await response.json();
       setUploadStatus('AI generation successful!');
       setResponseData(result);
-      
+
       // Autofill the form fields
       const extractedProductName = result.productName || result.name || '';
       const extractedDescription = result.description || '';
@@ -136,14 +136,14 @@ export default function Listing() {
         category: extractedCategory,
         gender: extractedGender
       });
-      
+
       setProductName(extractedProductName);
       setDescription(extractedDescription);
       setPrice(extractedPrice);
       setCategory(extractedCategory);
       setGender(extractedGender);
-      
-      
+
+
     } catch (error) {
       console.error('Upload error:', error);
       setUploadStatus(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -172,7 +172,7 @@ export default function Listing() {
       };
 
 
-      const response = await fetch('http://localhost:5207/api/Listing/create', {
+      const response = await fetch('http://50.217.45.185/api/Listing/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -189,10 +189,10 @@ export default function Listing() {
       const result = await response.json();
       setPostStatus('Listing posted successfully!');
 
-      
+
       // Redirect to the listing page
       window.location.href = `/listing/${result.id}`;
-      
+
     } catch (error) {
       console.error('Post error:', error);
       setPostStatus(`Post failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -278,11 +278,10 @@ export default function Listing() {
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
-          className={`relative shadow-[5px_5px_0px_rgba(0,0,0,1)] rounded-lg p-12 text-center transition-all duration-300 bg-zinc-50 ${
-            dragActive
+          className={`relative shadow-[5px_5px_0px_rgba(0,0,0,1)] rounded-lg p-12 text-center transition-all duration-300 bg-zinc-50 ${dragActive
               ? 'shadow-[3px_3px_0px_rgba(0,0,0,1)] scale-[0.98]'
               : 'hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:opacity-90'
-          }`}
+            }`}
         >
           <div className="space-y-4">
             <div className="mx-auto w-16 h-16 text-gray-400">
@@ -323,7 +322,7 @@ export default function Listing() {
             className="mt-8 bg-zinc-50 shadow-[5px_5px_0px_rgba(0,0,0,1)] rounded-lg p-8"
           >
             <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Preview</h3>
-            
+
             {/* Image Preview */}
             <div className="flex justify-center mb-6">
               {filePreviews.map((preview, idx) => (
@@ -346,7 +345,7 @@ export default function Listing() {
                 </motion.div>
               ))}
             </div>
-            
+
             {/* Action Buttons */}
             <div className="flex gap-3 justify-center">
               <button
@@ -363,7 +362,7 @@ export default function Listing() {
                     Processing...
                   </>
                 ) : (
-                    <div className="mr-2 cursor-pointer" >
+                  <div className="mr-2 cursor-pointer" >
                     Continue
                   </div>
                 )}
@@ -388,7 +387,7 @@ export default function Listing() {
             </div>
 
             {/* Status Message */}
-            
+
           </motion.div>
         )}
 
@@ -403,7 +402,7 @@ export default function Listing() {
             <div className="flex items-center justify-center gap-3 mb-6">
               <h3 className="text-center text-2xl font-semibold text-gray-800">Edit Listing Information</h3>
             </div>
-            
+
             <div className="space-y-6">
               {/* Product Name */}
               <div>
@@ -429,7 +428,7 @@ export default function Listing() {
                   placeholder="Enter price"
                 />
               </div>
-            {/* Category */}
+              {/* Category */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
                 <Select value={category} onValueChange={(e) => setCategory(e)}>
@@ -498,11 +497,10 @@ export default function Listing() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className={`p-4 rounded-lg text-center font-medium ${
-                    postStatus.includes('successfully') 
-                      ? 'bg-green-100 text-green-800' 
+                  className={`p-4 rounded-lg text-center font-medium ${postStatus.includes('successfully')
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}
+                    }`}
                 >
                   {postStatus}
                 </motion.div>

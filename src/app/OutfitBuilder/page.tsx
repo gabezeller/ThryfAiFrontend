@@ -119,7 +119,7 @@ export default function OutfitBuilder() {
     console.log("Images:  ", images);
 
 
-    const url = "http://localhost:5207/api/VisualOutfit/complete-look";
+    const url = "http://50.217.45.185/api/VisualOutfit/complete-look";
     console.log("Complete look URL:", url);
     try {
       const response = await fetch(url, {
@@ -158,7 +158,7 @@ export default function OutfitBuilder() {
     console.log("Generating outfit with vibe:", prompt, "and gender:", gender);
 
     try {
-      const url = `http://localhost:5207/api/OutfitBuilder?vibe=${encodeURIComponent(prompt)}&gender=${gender}`;
+      const url = `http://50.217.45.185/api/OutfitBuilder?vibe=${encodeURIComponent(prompt)}&gender=${gender}`;
       console.log("Outfit Builder URL:", url);
 
       const response = await fetch(url, {

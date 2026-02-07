@@ -45,7 +45,7 @@ export default function ProfilePage() {
     useEffect(() => {
         async function fetchOutfits() {
             try {
-                const response = await fetch("http://localhost:5207/api/Outfits", {
+                const response = await fetch("http://50.217.45.185/api/Outfits", {
                     headers: {
                         "accept": "text/plain"
                     }

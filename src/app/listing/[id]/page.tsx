@@ -19,7 +19,7 @@ export default function ListingDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { addToCart, isInCart } = useCart();
-  
+
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -28,12 +28,12 @@ export default function ListingDetailPage() {
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const response = await fetch(`http://localhost:5207/api/Listing/${id}`);
-        
+        const response = await fetch(`http://50.217.45.185/api/Listing/${id}`);
+
         if (!response.ok) {
           throw new Error('Failed to fetch listing');
         }
-        
+
         const data = await response.json();
         console.log('Fetched listing data:', data);
         setListing(data);
@@ -133,7 +133,7 @@ export default function ListingDetailPage() {
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">
                   {listing.productName}
                 </h1>
-                
+
                 <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
                   {listing.gender}
                 </span>
@@ -160,7 +160,7 @@ export default function ListingDetailPage() {
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                <button 
+                <button
                   onClick={() => {
                     if (listing && !isInCart(listing.id)) {
                       addToCart({
@@ -178,11 +178,11 @@ export default function ListingDetailPage() {
                   disabled={listing ? isInCart(listing.id) : false}
                   className="flex-1 bg-amber-500 text-white font-semibold py-3 rounded-lg hover:bg-amber-600 transition-colors cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {listing && isInCart(listing.id) 
-                    ? 'Already in Cart' 
-                    : addedToCart 
-                    ? '✓ Added to Cart!' 
-                    : 'Add to Cart'
+                  {listing && isInCart(listing.id)
+                    ? 'Already in Cart'
+                    : addedToCart
+                      ? '✓ Added to Cart!'
+                      : 'Add to Cart'
                   }
                 </button>
               </div>
