@@ -67,6 +67,9 @@ export default function Home() {
           Go to Outfit Builder
         </Link>
 
+        <Link href={"/listing"} className="text-amber-200 hover:underline">
+          Go to listing create
+        </Link>
       </main>
     </div>
   );
