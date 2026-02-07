@@ -168,7 +168,7 @@ export default function Listing() {
 
         {/* Preview & Actions */}
         {files.length > 0 && (
-          <div className="mt-8 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+          <div className="mt-8 bg-white rounded-2xl p-8 ">
             <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Preview</h3>
             
             {/* Image Preview */}
@@ -179,12 +179,10 @@ export default function Listing() {
                     <img
                       src={preview.url}
                       alt={preview.file.name}
-                      className="w-80 h-80 rounded-xl object-cover shadow-xl ring-1 ring-gray-200"
+                      className="w-80 h-80 rounded-xl object-cover shadow-xl "
                     />
                   </div>
                   <div className="mt-4">
-                    <p className="text-sm font-medium text-gray-700">{preview.file.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{(preview.file.size / 1024).toFixed(2)} KB</p>
                   </div>
                 </div>
               ))}
