@@ -172,7 +172,7 @@ export default function LandingPage() {
     );
 
     return (
-        <div className="min-h-screen px-4 md:px-12 py-12 bg-[#fafafa]">
+        <div className="min-h-screen px-4 md:px-12 py-12 ">
             {/* Hero Title */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
