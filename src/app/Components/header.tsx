@@ -90,7 +90,7 @@ const Header = () => {
                     </defs>
                 </svg>
             </Link>
-            <div className="flex bg-[#fafafa] items-center rounded-xl px-3 py-1 gap-2 cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out transform focus:outline-none">
+            <div className="flex bg-[#fafafa] items-center rounded-xl px-3 py-1 gap-2 cursor-pointer  transition-transform duration-300 ease-in-out transform focus:outline-none">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button className="bg-[#fafafa] flex items-center gap-2 border-none focus:outline-none rounded-xl p-2 cursor-pointer hover:bg-gray-100 transition-colors">
