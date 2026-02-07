@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {ScrollArea} from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 
@@ -172,13 +172,13 @@ export default function OutfitBuilder() {
       const json: Product[] = await response.json();
       console.log("Generated outfit:", json);
       setOutfitResults(json);
-      
+
 
       setGeneratorVisible(false);
-      
+
       setResultsVisible(true);
-      
-      
+
+
 
     } catch (error) {
       console.error("Error generating outfit:", error);
@@ -295,33 +295,76 @@ export default function OutfitBuilder() {
           </Button>
         </div>
 
-  
+
       </motion.div>
     );
   }
 
+  const handleSaveOutfit = async () => {
+    setLoading(true);
+    const payload = {
+      id: 0,
+      name: `Outfit ${new Date().toLocaleString()}`,
+      items: outfitResults
+    };
+
+    try {
+      const response = await fetch("http://localhost:5207/api/Outfits", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      // Success
+      console.log("Outfit saved successfully");
+      clearData();
+      setResultsVisible(false); // Go back to main menu
+
+    } catch (error) {
+      console.error("Error saving outfit:", error);
+      // Optionally handle error state here
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resultsSection = () => {
-    
+
     return (
-        // {/* Results Section */}
-        outfitResults.length > 0  && (
-          // <ScrollArea className="h-full w-full">
-          <div className="flex flex-col items-center h-full w-full ">
+      // {/* Results Section */}
+      outfitResults.length > 0 && (
+        // <ScrollArea className="h-full w-full">
+        <div className="flex flex-col items-center h-full w-full mb-20">
 
-            <h3 className="ax-w-xs text-5xl font-bold leading-10 tracking-tight mx-auto mb-10 text-black dark:text-zinc-50 text-center">Your Generated Outfit</h3>
-            <div className="flex flex-col gap-4">
-                                  <IoArrowBackCircleOutline className="self-start text-2xl relative left-30 -top-18 hover:cursor-pointer hover:opacity-75" onClick={() => {setResultsVisible(false); prompt ? setGeneratorVisible(true) : setCompleterVisible(true)}} />
-
-              
-              {outfitResults.map((product, index) => (
-                <ArticleTile idx={index} key={product.id} product={product} />
-              ))}
-              
+          <h3 className="ax-w-xs text-5xl font-bold leading-10 tracking-tight mx-auto mb-10 text-black dark:text-zinc-50 text-center">Your Generated Outfit</h3>
+          <div className="flex flex-col gap-4 items-center w-full">
+            <div className="w-full max-w-2xl flex justify-between items-center px-4 md:px-0">
+              <IoArrowBackCircleOutline className="text-4xl hover:cursor-pointer hover:opacity-75 text-zinc-800 dark:text-zinc-200" onClick={() => { setResultsVisible(false); prompt ? setGeneratorVisible(true) : setCompleterVisible(true) }} />
+              <Button
+                className="cursor-pointer bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300"
+                onClick={handleSaveOutfit}
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save Outfit"}
+              </Button>
             </div>
+
+
+            {outfitResults.map((product, index) => (
+              <ArticleTile idx={index} key={product.id} product={product} />
+            ))}
+
           </div>
-          // </ScrollArea>
-        )
-      );
+        </div>
+        // </ScrollArea>
+      )
+    );
   };
 
   const clearData = () => {
@@ -329,6 +372,8 @@ export default function OutfitBuilder() {
     setPrompt("");
     setGender("");
     setImages(null);
+    setImageCategories(new Map());
+    setPreviews([]);
   };
 
 
@@ -487,7 +532,7 @@ function ArticleTile({ product, idx }: { product: Product, idx: number }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-       className={`${idx % 2 === 0 ? "ml-40" : "mr-40"} flex flex-row bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden mb-4 max-w-2xl`}
+      className={`${idx % 2 === 0 ? "ml-40" : "mr-40"} flex flex-row bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden mb-4 max-w-2xl`}
     >
       {/* Image Section */}
       <div className="w-48 h-48 flex-shrink-0">
