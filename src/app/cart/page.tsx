@@ -20,14 +20,14 @@ export default function CartPage() {
     try {
       // Extract product IDs from cart
       const productIds = cart.map(item => item.id);
-      
+
       // Build query string
       const queryParams = new URLSearchParams();
       productIds.forEach(id => queryParams.append('productIds', id.toString()));
       queryParams.append('userId', 'global-user');
 
       const response = await fetch(
-        `http://localhost:5207/api/Purchase/record?${queryParams.toString()}`,
+        `http://50.217.45.185/api/Purchase?${queryParams.toString()}`,
         {
           method: 'POST',
         }
@@ -39,15 +39,15 @@ export default function CartPage() {
 
       const result = await response.json();
       console.log('Purchase successful:', result);
-      
+
       setPurchaseStatus('success');
-      
+
       // Clear cart after successful purchase
       setTimeout(() => {
         clearCart();
         window.location.href = '/';
       }, 2000);
-      
+
     } catch (error) {
       console.error('Purchase error:', error);
       setPurchaseStatus('error');
@@ -214,7 +214,7 @@ export default function CartPage() {
             <div className="lg:col-span-1">
               <div className="bg-zinc-50 rounded-lg shadow-[5px_5px_0px_rgba(0,0,0,1)] p-6 sticky top-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-6">Order Summary</h2>
-                
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-gray-700">
                     <span>Subtotal ({cartCount} items)</span>
@@ -235,7 +235,7 @@ export default function CartPage() {
                 <button
                   onClick={handleCheckout}
                   disabled={isProcessing || purchaseStatus === 'success'}
-                  className="w-full py-4 bg-gradient-to-tr from-amber-300 to-amber-400 text-black font-semibold rounded-lg shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="cursor-pointer w-full py-4 bg-gradient-to-tr from-amber-300 to-amber-400 text-black font-semibold rounded-lg shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isProcessing ? (
                     <span className="flex items-center justify-center">
