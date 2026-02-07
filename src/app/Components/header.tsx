@@ -2,6 +2,7 @@
 
 import { FaShoppingCart } from "react-icons/fa";
 import { IoSearchSharp } from "react-icons/io5";
+import { FaChevronDown } from "react-icons/fa";
 import Link from "next/link";
 import {
     DropdownMenu,
@@ -84,6 +85,7 @@ const Header = () => {
                     <DropdownMenuTrigger asChild>
                         <button className="bg-[#fafafa] flex items-center gap-2 border-none focus:outline-none rounded-xl p-2 cursor-pointer hover:bg-gray-100 transition-colors">
                             Category
+                            <FaChevronDown />
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-50 drop-shadow" align="start" alignOffset={-10}>
