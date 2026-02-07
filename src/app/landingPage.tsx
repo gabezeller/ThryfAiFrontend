@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import Box from '@mui/material/Box';
 import Masonry from '@mui/lab/Masonry';
 import { styled } from '@mui/material/styles';
+import Link from "next/link";
 
 export default function LandingPage() {
     const containerVariants = {
@@ -123,13 +124,14 @@ export default function LandingPage() {
                         className="w-full min-h-[220px] flex items-center justify-center p-6 bg-gradient-to-br from-zinc-900 to-zinc-800 relative overflow-hidden"
                     >
                         <div className="text-center relative z-10">
-                            <a href="/explore" className="text-white text-xl font-bold block mb-2 tracking-tight">
+                            <Link href="/explore" className="text-white text-xl font-bold block mb-2 tracking-tight">
                                 Explore <br /> Collections
-                            </a>
+                            
                             <div className="flex items-center justify-center gap-2 text-[#fc934d] font-semibold text-xs">
                                 <span>Browse Shop</span>
                                 <span className="text-lg group-hover:translate-x-1.5 transition-transform duration-300">→</span>
                             </div>
+                            </Link>
                         </div>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-[#fc934d]/10 rounded-full blur-3xl -mr-16 -mt-16" />
                     </motion.div>

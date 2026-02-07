@@ -169,7 +169,7 @@ export default function ExplorePage(props: ExplorePageProps) {
                     <CarouselContent>
                         {featureItems.map((item) => item.imageUrl && !item.imageUrl.includes("blob") && item.productName && item.price ? (               
                             <CarouselItem key={item.id} className="xl:basis-1/5 lg:basis-1/3 basis-1/2  p-2 ">
-                                <ItemCard imgUrl={item.imageUrl} name={item.productName} price={item.price} heartable={false} />
+                                <ItemCard imgUrl={item.imageUrl} name={item.productName} price={item.price} heartable={false} id={item.id} />
                             </CarouselItem>
                         ) : null)}
 
@@ -190,7 +190,7 @@ export default function ExplorePage(props: ExplorePageProps) {
             {!loading && exploreItems.length > 0 ? (<Masonry columns={4} spacing={8}>
             {exploreItems.map((item, index) =>
                 item.imageUrl && !item.imageUrl.includes("blob") && item.productName && item.price ? (
-                    <ItemCard key={index} imgUrl={item.imageUrl} name={item.productName} price={item.price} />
+                    <ItemCard key={index} imgUrl={item.imageUrl} name={item.productName} price={item.price} id={item.id} />
                 ) : null
             )}
             </Masonry>) : (
