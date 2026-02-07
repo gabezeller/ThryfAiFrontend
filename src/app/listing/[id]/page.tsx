@@ -11,6 +11,7 @@ interface Listing {
   price: number;
   gender: string;
   imageUrl: string;
+  category: string;
 }
 
 export default function ListingDetailPage() {
@@ -129,8 +130,12 @@ export default function ListingDetailPage() {
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">
                   {listing.productName}
                 </h1>
+                
                 <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
                   {listing.gender}
+                </span>
+                <span className="inline-block ml-2 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
+                  {listing.category}
                 </span>
               </div>
 
@@ -152,6 +157,9 @@ export default function ListingDetailPage() {
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
+                <button onClick={() => {}} className="flex-1 bg-amber-500 text-white font-semibold py-3 rounded-lg hover:bg-amber-600 transition-colors cursor-pointer">
+                    Add to Cart
+                </button>
               </div>
             </div>
           </div>
