@@ -50,6 +50,7 @@ interface Product {
 
 const Header = () => {
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchCategory, setSearchCategory] = useState("");
     const [searchResults, setSearchResults] = useState<Product[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +123,7 @@ const Header = () => {
     }
 
     async function handleSearch(): Promise<Product[]> {
-        const url = `http://localhost:5207/api/listing/search?search=${searchQuery}`;
+        const url = `http://localhost:5207/api/listing/search?search=${searchQuery}&category=${searchCategory}`;
         setIsLoading(true);
         setShowResults(true);
         try {
@@ -205,15 +206,18 @@ const Header = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <button className="bg-[#fafafa] flex items-center gap-2 border-none focus:outline-none rounded-xl p-2 cursor-pointer hover:bg-gray-100 transition-colors">
-                                Category
+                                {searchCategory || "Category"}
                                 <FaChevronDown />
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-50 drop-shadow z-1000" align="start" alignOffset={-10}>
-                            <DropdownMenuItem className="cursor-pointer">Topwear</DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer">Bottomwear</DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer">Footwear</DropdownMenuItem>
-                            <DropdownMenuItem className="cursor-pointer">Accessories</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSearchCategory("")} className="cursor-pointer">All</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSearchCategory("topwear")} className="cursor-pointer">Topwear</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSearchCategory("bottomwear")} className="cursor-pointer">Bottomwear</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSearchCategory("footwear")} className="cursor-pointer">Footwear</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSearchCategory("accessories")} className="cursor-pointer">Accessories</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSearchCategory("belts")} className="cursor-pointer">Belts</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setSearchCategory("watches")} className="cursor-pointer">Watches</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <div className="w-[1px] h-5 bg-gray-500 rounded-full" />
