@@ -1,0 +1,110 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel;
+using ThryftAiServer.Services.OutfitBuilder;
+using ThryftAiServer.Services.Ai;
+using ThryftAiServer.Services.Aws;
+using ThryftAiServer.Services.Inventory;
+using ThryftAiServer.Services.Listing;
+using ThryftAiServer.Services.Discovery;
+using ThryftAiServer.Services.Personalization;
+using Amazon.S3;
+
+DotNetEnv.Env.Load();
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+// Configure DB
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                      ?? builder.Configuration.GetConnectionString("DefaultConnection") 
+                      ?? "Data Source=app.db";
+
+builder.Services.AddDbContext<ThryftAiServer.Data.App.AppDbContext>(options =>
+{
+    if (connectionString.Contains("Host=") || connectionString.Contains("Server="))
+    {
+        options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        options.UseSqlite(connectionString);
+    }
+});
+
+// Configure Semantic Kernel
+var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") 
+                  ?? builder.Configuration["OpenAI:ApiKey"] 
+                  ?? "your-api-key-here";
+builder.Services.AddKernel()
+    .AddOpenAIChatCompletion("gpt-4o-mini", openAiApiKey);
+
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Register AWS & AI Services
+var awsOptions = builder.Configuration.GetAWSOptions();
+var accessKey = Environment.GetEnvironmentVariable("AWS__AccessKeyId") ?? builder.Configuration["AWS:AccessKeyId"];
+var secretKey = Environment.GetEnvironmentVariable("AWS__SecretAccessKey") ?? builder.Configuration["AWS:SecretAccessKey"];
+var region = Environment.GetEnvironmentVariable("AWS__Region") ?? builder.Configuration["AWS:Region"];
+
+if (!string.IsNullOrEmpty(accessKey) && !string.IsNullOrEmpty(secretKey))
+{
+    awsOptions.Credentials = new Amazon.Runtime.BasicAWSCredentials(accessKey, secretKey);
+}
+
+if (!string.IsNullOrEmpty(region))
+{
+    awsOptions.Region = Amazon.RegionEndpoint.GetBySystemName(region);
+}
+
+builder.Services.AddDefaultAWSOptions(awsOptions);
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddScoped<S3Service>();
+builder.Services.AddScoped<ProductEnrichmentService>();
+builder.Services.AddScoped<InventoryService>();
+builder.Services.AddScoped<ListingAutofillService>();
+builder.Services.AddScoped<VisualSearchService>();
+builder.Services.AddScoped<PersonalizedRecommendationService>();
+builder.Services.AddScoped<OutfitBuilderService>();
+builder.Services.AddScoped<VisualOutfitBuilderService>();
+
+var app = builder.Build();
+
+app.UseCors("AllowAll");
+
+// No seeding needed at runtime
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
+
+app.MapControllers();
+
+app.MapGet("/", () => Results.Ok("ok"));
+app.MapGet("/health", () => Results.Ok("healthy"));
+
+app.Run();

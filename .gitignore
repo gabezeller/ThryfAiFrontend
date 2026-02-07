@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# C# Server
+bin/
+obj/
+app.db
+*.user
+.idea/
+
