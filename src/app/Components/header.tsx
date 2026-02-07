@@ -3,6 +3,7 @@
 import { FaShoppingCart } from "react-icons/fa";
 import { IoSearchSharp } from "react-icons/io5";
 import { FaChevronDown } from "react-icons/fa";
+import { FaCamera } from "react-icons/fa6";
 import Link from "next/link";
 import {
     DropdownMenu,
@@ -15,6 +16,10 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { useState, useRef, useEffect } from "react";
 
 export function AvatarWithBadge() {
     return (
@@ -24,10 +29,125 @@ export function AvatarWithBadge() {
         </Avatar>
     )
 }
+interface Product {
+    id: number;
+    externalId: string;
+    productName: string;
+    gender: string;
+    masterCategory: string;
+    category: string;
+    fashionCategory: string;
+    color: string;
+    season: string;
+    year: number;
+    usage: string;
+    description: string;
+    imageUrl: string;
+    metadata: string;
+    brand: string;
+    price: number;
+}
 
 const Header = () => {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<Product[]>([]);
+    const [showResults, setShowResults] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+    const onCameraClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
+
+    async function handlePopoverSearch() {
+        if (selectedFile) {
+            await handleReverseImageSearch(selectedFile);
+            setIsPopoverOpen(false);
+        }
+    };
+
+    async function handleReverseImageSearch(file: File) {
+        const url = `http://localhost:5207/api/Discovery/visual-search`;
+        setIsLoading(true);
+        setShowResults(true);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "accept": "text/plain"
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            const json = await response.json();
+            console.log("Search API result:", json);
+            setSearchResults(json);
+            return json;
+        } catch (error) {
+            console.error("Error searching for outfit:", error);
+        } finally {
+            setIsLoading(false);
+        }
+
+        return [];
+    }
+
+    async function handleSearch(): Promise<Product[]> {
+        const url = `http://localhost:5207/api/listing/search?search=${searchQuery}`;
+        setIsLoading(true);
+        setShowResults(true);
+        try {
+            const response = await fetch(url, {
+                method: "GET"
+            });
+
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            const json = await response.json();
+            console.log("Search API result:", json);
+            setSearchResults(json);
+            return json;
+        } catch (error) {
+            console.error("Error searching for outfit:", error);
+        } finally {
+            setIsLoading(false);
+        }
+
+        return [];
+    }
     return (
-        <nav className="flex pl-8 pr-8 items-center max-w-7xl mx-auto justify-between w-full text-black p-4 sm:rounded-2xl bg-gradient-to-tr from-amber-300 to-amber-400 mb-10 sm:mt-4 rounded-none mt-0 drop-shadow-sm">
+        <nav suppressHydrationWarning className="relative z-[100] flex pl-8 pr-8 items-center max-w-7xl mx-auto justify-between w-full text-black p-4 sm:rounded-2xl bg-gradient-to-tr from-amber-300 to-amber-400 mb-10  rounded-none mt-0 drop-shadow-sm">
             <Link href={"/"} className="hover:cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">
                 <svg width="218" height="63" viewBox="0 0 218 63" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-12 w-auto">
                     <g filter="url(#filter0_d_0_1)">
@@ -80,28 +200,168 @@ const Header = () => {
                     </defs>
                 </svg>
             </Link>
-            <div className="flex bg-[#fafafa] items-center rounded-xl px-3 py-1 gap-2 cursor-pointer ">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button className="bg-[#fafafa] flex items-center gap-2 border-none focus:outline-none rounded-xl p-2 cursor-pointer hover:bg-gray-100 transition-colors">
-                            Category
-                            <FaChevronDown />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-50 drop-shadow" align="start" alignOffset={-10}>
-                        <DropdownMenuItem className="cursor-pointer">Topwear</DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">Bottomwear</DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">Footwear</DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">Accessories</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <div className="w-[1px] h-5 bg-gray-500 rounded-full" />
-                <input type="text" placeholder="Search any outfit..." className="bg-[#fafafa] border-none focus:outline-none rounded-xl p-2 w-[400px]" />
-                <IoSearchSharp className="text-xl text-gray-500 cursor-pointer" />
+            <div className="relative group">
+                <div className="flex bg-[#fafafa] items-center rounded-xl px-3 py-1 gap-2 cursor-pointer ">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="bg-[#fafafa] flex items-center gap-2 border-none focus:outline-none rounded-xl p-2 cursor-pointer hover:bg-gray-100 transition-colors">
+                                Category
+                                <FaChevronDown />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-50 drop-shadow" align="start" alignOffset={-10}>
+                            <DropdownMenuItem className="cursor-pointer">Topwear</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">Bottomwear</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">Footwear</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">Accessories</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <div className="w-[1px] h-5 bg-gray-500 rounded-full" />
+                    <input
+                        type="text"
+                        placeholder="Search any outfit..."
+                        value={searchQuery}
+                        onInput={e => {
+                            setSearchQuery((e.target as HTMLInputElement).value);
+                            if ((e.target as HTMLInputElement).value === "") {
+                                setShowResults(false);
+                            }
+                        }}
+                        onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                        onFocus={() => searchResults.length > 0 && setShowResults(true)}
+                        className="bg-[#fafafa] border-none focus:outline-none rounded-xl p-2 w-[350px]"
+                    />
+                    <IoSearchSharp onClick={handleSearch} className="text-xl text-gray-500 cursor-pointer hover:text-amber-500 transition-colors" />
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
+                    />
+                    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                        <PopoverTrigger asChild>
+                            <button className="flex items-center">
+                                <FaCamera className="text-xl text-gray-500 cursor-pointer hover:text-amber-500 transition-colors" />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-4 bg-white/95 backdrop-blur-sm border-amber-100 shadow-xl rounded-2xl z-1000">
+                            <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-bold leading-none text-gray-900">Visual Search</h4>
+                                    <p className="text-sm text-gray-500">
+                                        Upload an image to search for similar styles.
+                                    </p>
+                                </div>
+                                <div className="grid gap-3">
+                                    {previewUrl ? (
+                                        <div className="relative group rounded-xl overflow-hidden border-2 border-amber-100 aspect-square bg-gray-50">
+                                            <img
+                                                src={previewUrl}
+                                                alt="Preview"
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    onClick={onCameraClick}
+                                                    className="cursor-pointer bg-white hover:bg-gray-100 text-gray-900 border-none h-8"
+                                                >
+                                                    Change Image
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={onCameraClick}
+                                            className="flex flex-col items-center justify-center gap-2 h-32 w-full rounded-xl border-2 border-dashed border-amber-200 bg-amber-50/50 hover:bg-amber-50 transition-colors group cursor-pointer"
+                                        >
+                                            <FaCamera className="text-2xl text-amber-400 group-hover:scale-110 transition-transform" />
+                                            <span className="text-sm text-amber-600 font-medium">Select Image</span>
+                                        </button>
+                                    )}
+                                    <Button
+                                        onClick={handlePopoverSearch}
+                                        disabled={!selectedFile || isLoading}
+                                        className="cursor-pointer w-full bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl h-10 shadow-sm"
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                                                Searching...
+                                            </>
+                                        ) : (
+                                            "Search Outfits"
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
+                {/* Search Results Menu */}
+                {showResults && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="p-2 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <span className="text-xs font-bold text-gray-400 px-2 uppercase tracking-wider">Results ({searchResults.length})</span>
+                            <button
+                                onClick={() => setShowResults(false)}
+                                className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                        <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
+                            {isLoading ? (
+                                <div className="p-12 flex flex-col items-center gap-3">
+                                    <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                                    <p className="text-sm text-gray-500 animate-pulse">Searching for outfits...</p>
+                                </div>
+                            ) : searchResults.length > 0 ? (
+                                searchResults.map((product) => (
+                                    <div
+                                        key={product.id}
+                                        onClick={() => setShowResults(false)}
+                                        className="p-3 hover:bg-amber-50 flex items-center gap-4 cursor-pointer transition-all duration-200 group/item border-b border-gray-50 last:border-none"
+                                    >
+                                        <div className="w-14 h-14 rounded-xl overflow-hidden shadow-sm flex-shrink-0 bg-gray-100">
+                                            <img
+                                                src={product.imageUrl}
+                                                alt={product.productName}
+                                                className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-300"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col flex-grow">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-sm font-bold text-gray-800 line-clamp-1">{product.productName}</span>
+                                                <span className="text-sm font-black text-amber-600">${product.price}</span>
+                                            </div>
+                                            <span className="text-xs text-gray-500">{product.brand} • {product.category}</span>
+                                            <div className="flex gap-2 mt-1">
+                                                <span className="text-[10px] px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">{product.gender}</span>
+                                                <span className="text-[10px] px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">{product.color}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="p-8 text-center flex flex-col items-center gap-2">
+                                    <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-300">
+                                        <IoSearchSharp className="text-2xl" />
+                                    </div>
+                                    <p className="text-gray-500 font-medium">No results found for "{searchQuery}"</p>
+                                    <p className="text-xs text-gray-400 text-balance">Try searching for something else or check your spelling.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
             <div className="flex gap-5 items-center">
-                <div className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</div>
-                <Link href="/OutfitBuilder" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
+                <Link href="/outfitbuilder" suppressHydrationWarning className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
+                <Link href="/explore" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</Link>
                 <Link href="listing" className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</Link>
                 <FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" />
                 <AvatarWithBadge />
