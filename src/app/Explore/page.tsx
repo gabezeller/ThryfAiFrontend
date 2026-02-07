@@ -167,11 +167,12 @@ export default function ExplorePage(props: ExplorePageProps) {
         }),
       ]}>           <CarouselPrevious />
                     <CarouselContent>
-                        {featureItems.map((item) => (
+                        {featureItems.map((item) => item.imageUrl && !item.imageUrl.includes("blob") && item.productName && item.price ? (               
                             <CarouselItem key={item.id} className="xl:basis-1/5 lg:basis-1/3 basis-1/2  p-2 ">
-                                <ItemCard imgUrl={item.imageUrl} name={item.productName} price={item.price} heartable={false} />
+                                <ItemCard imgUrl={item.imageUrl} name={item.productName} price={item.price} heartable={false} id={item.id} />
                             </CarouselItem>
-                        ))}
+                        ) : null)}
+
                     </CarouselContent>
                     
                     <CarouselNext />
@@ -187,10 +188,11 @@ export default function ExplorePage(props: ExplorePageProps) {
         transition={{ duration: 0.6 }} >
                 <h2 className=" w-9/10 text-5xl font-bold leading-10 tracking-tight mx-auto text-black dark:text-zinc-50 text-right mb-8 mt-12">Explore more options</h2>
             {!loading && exploreItems.length > 0 ? (<Masonry columns={4} spacing={8}>
-            {exploreItems.map((item, index) => (
-                <ItemCard key={index} imgUrl={item.imageUrl} name={item.productName} price={item.price} />
-                
-            ))}
+            {exploreItems.map((item, index) =>
+                item.imageUrl && !item.imageUrl.includes("blob") && item.productName && item.price ? (
+                    <ItemCard key={index} imgUrl={item.imageUrl} name={item.productName} price={item.price} id={item.id} />
+                ) : null
+            )}
             </Masonry>) : (
                 <Spinner className="size-8 mx-auto" />
             )}
