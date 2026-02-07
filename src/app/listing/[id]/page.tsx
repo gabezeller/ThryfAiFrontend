@@ -123,7 +123,7 @@ export default function ListingDetailPage() {
             </div>
 
             {/* Details Section */}
-            <div className="space-y-6">
+            <div className="space-y-2">
               {/* Product Name */}
               <div>
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">

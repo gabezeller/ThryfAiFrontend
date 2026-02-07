@@ -124,12 +124,23 @@ export default function Listing() {
       setResponseData(result);
       
       // Autofill the form fields
-      setProductName(result.productName || result.name || '');
-      setDescription(result.description || '');
-      setPrice(result.price?.toString() || '');
-      setGender(result.gender || '');
+      const extractedProductName = result.productName || result.name || '';
+      const extractedDescription = result.description || '';
+      const extractedPrice = result.price?.toString() || '';
+      const extractedGender = result.gender || '';
       
-      console.log('Upload result:', result);
+      console.log('Extracted fields:', {
+        productName: extractedProductName,
+        description: extractedDescription,
+        price: extractedPrice,
+        gender: extractedGender
+      });
+      
+      setProductName(extractedProductName);
+      setDescription(extractedDescription);
+      setPrice(extractedPrice);
+      setGender(extractedGender);
+      
       
     } catch (error) {
       console.error('Upload error:', error);
@@ -150,12 +161,13 @@ export default function Listing() {
 
     try {
       const listingData = {
-        productName,
-        description,
-        price: parseFloat(price),
-        gender,
-        imageUrl: responseData.imageUrl, // Use the AWS URL from the autofill response
+        Name: productName,
+        Description: description,
+        Price: parseFloat(price),
+        Gender: gender,
+        ImageUrl: responseData.imageUrl,
       };
+
 
       const response = await fetch('http://localhost:5207/api/Listing/create', {
         method: 'POST',
@@ -174,7 +186,6 @@ export default function Listing() {
       const result = await response.json();
       setPostStatus('Listing posted successfully!');
 
-      console.log('Post result:', result);
       
       // Redirect to the listing page
       window.location.href = `/listing/${result.id}`;
