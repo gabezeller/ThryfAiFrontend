@@ -24,7 +24,7 @@ import { useState, useRef, useEffect } from "react";
 export function AvatarWithBadge() {
     return (
         <Avatar className="cursor-pointer hover:ring-2 hover:ring-[#fc934d] transition-all duration-300">
-            <AvatarImage src="https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg" alt="@shadcn" />
+            <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/9/96/University_of_Illinois_at_Chicago_circle_logo.svg" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
         </Avatar>
     )
