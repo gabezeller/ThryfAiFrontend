@@ -362,7 +362,7 @@ const Header = () => {
             <div className="flex gap-5 items-center">
                 <Link href="/outfitbuilder" suppressHydrationWarning className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
                 <Link href="/explore" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</Link>
-                <div className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</div>
+                <Link href="listing" className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</Link>
                 <FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" />
                 <Link href="/profile">
                     <AvatarWithBadge />
