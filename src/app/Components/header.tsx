@@ -229,7 +229,7 @@ const Header = () => {
                         }}
                         onKeyDown={e => e.key === 'Enter' && handleSearch()}
                         onFocus={() => searchResults.length > 0 && setShowResults(true)}
-                        className="bg-[#fafafa] border-none focus:outline-none rounded-xl p-2 w-[400px]"
+                        className="bg-[#fafafa] border-none focus:outline-none rounded-xl p-2 w-[350px]"
                     />
                     <IoSearchSharp onClick={handleSearch} className="text-xl text-gray-500 cursor-pointer hover:text-amber-500 transition-colors" />
                     <input
@@ -360,9 +360,9 @@ const Header = () => {
                 )}
             </div>
             <div className="flex gap-5 items-center">
-                <div className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</div>
                 <Link href="/outfitbuilder" suppressHydrationWarning className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
-                <div className="hover:cursor-pointer text-lg font-medium transition-color bg-white text-black rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</div>
+                <Link href="/explore" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</Link>
+                <div className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</div>
                 <FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" />
                 <AvatarWithBadge />
             </div>

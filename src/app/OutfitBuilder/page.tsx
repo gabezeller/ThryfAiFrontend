@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 
 
@@ -171,6 +172,7 @@ export default function OutfitBuilder() {
       const json: Product[] = await response.json();
       console.log("Generated outfit:", json);
       setOutfitResults(json);
+      
 
       setGeneratorVisible(false);
       
@@ -303,22 +305,37 @@ export default function OutfitBuilder() {
     return (
         // {/* Results Section */}
         outfitResults.length > 0  && (
-          <div className="flex flex-col items-center  w-full ">
+          // <ScrollArea className="h-full w-full">
+          <div className="flex flex-col items-center h-full w-full ">
+
             <h3 className="ax-w-xs text-5xl font-bold leading-10 tracking-tight mx-auto mb-10 text-black dark:text-zinc-50 text-center">Your Generated Outfit</h3>
             <div className="flex flex-col gap-4">
+                                  <IoArrowBackCircleOutline className="self-start text-2xl relative left-30 -top-18 hover:cursor-pointer hover:opacity-75" onClick={() => {setResultsVisible(false); prompt ? setGeneratorVisible(true) : setCompleterVisible(true)}} />
+
+              
               {outfitResults.map((product, index) => (
                 <ArticleTile idx={index} key={product.id} product={product} />
               ))}
+              
             </div>
           </div>
+          // </ScrollArea>
         )
       );
   };
 
+  const clearData = () => {
+    setOutfitResults([]);
+    setPrompt("");
+    setGender("");
+    setImages(null);
+  };
+
+
 
 
   return (
-    <div className="flex min-h-screen h-screen items-center justify-center bg-white font-sans relative overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center bg-white font-sans relative ">
       {/* Decorative Fashion Images - Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.img
@@ -371,7 +388,7 @@ export default function OutfitBuilder() {
         />
       </div>
 
-      <main className="flex flex-1 min-h-screen h-full  w-full max-w-7xl flex-col  bg-transparent dark:bg-black sm:items-start rounded-lg relative z-10">
+      <main className="flex flex-1 min-h-screen h-full h-full  w-full max-w-7xl flex-col  bg-transparent dark:bg-black sm:items-start rounded-lg relative">
 
         <motion.div
           initial={{ opacity: 0, y: 40 }}
