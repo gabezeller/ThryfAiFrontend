@@ -3,9 +3,35 @@
 import { FaCamera, FaWandMagicSparkles } from "react-icons/fa6";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { use, useEffect, useState } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
+import {motion} from "framer-motion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  NativeSelect,
+  NativeSelectOptGroup,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 
 
@@ -25,6 +51,10 @@ import { Textarea } from "@/components/ui/textarea"
 export default function OutfitBuilder() {
   const [images, setImages] = useState<FileList | null>(null);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [prompt, setPrompt] = useState<string>("");
+
+  const [generatorVisible, setGeneratorVisible] = useState<boolean>(false);
+  const [completerVisible, setCompleterVisible] = useState<boolean>(false);
 
   const onImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     setImages(event.target.files);
@@ -39,64 +69,138 @@ export default function OutfitBuilder() {
   setPreviews(previewUrls);
 };
 
+
+
   const outfitCompleter = () => {
 
     
     return ( 
 
-      <div className="flex flex-col items-center mx-auto shadow-lg  bg-zinc-50 font-sans dark:bg-black  rounded-lg p-10">
+       <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}  className="flex flex-col items-center mx-auto shadow-lg  bg-zinc-50 font-sans dark:bg-black  rounded-lg p-10">
+        <IoArrowBackCircleOutline className="self-start text-2xl relative -left-5 -top-5 hover:cursor-pointer hover:opacity-75" onClick={() => setCompleterVisible(false)} />
         <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-50">Find the missing piece</h2>
           <p className=" flex max-w-xs text-lg leading-8 text-zinc-600 dark:text-zinc-400 mx-auto text-center">
-          Upload what you have and let out AI do the rest!
+          Upload what you have and let our AI complete your fit!
         </p>
 
-        <Field>
-          <FieldLabel htmlFor="picture">Pictures</FieldLabel>
+        <Field className="mb-4">
+          <FieldLabel htmlFor="picture"><FaCamera /> Pictures</FieldLabel>
           <Input id="picture" type="file" multiple onChange={handleChange}/>
           <FieldDescription>Upload pictures of your clothing.</FieldDescription>
         </Field>
 
         {previews.map((src, i) => (
-  <img key={i} src={src} className="w-32 h-32 object-cover" />
+          <motion.div initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }} key={i} className="flex flex-col    mb-4">
+        
+          <ClothingImageCategory img={src}/>
+
+
+
+          </motion.div>
+
 ))}
 
-      <p className="flex max-w-xs text-lg leading-8 text-zinc-600 leading-tight mb-4 mt-10 text-sm dark:text-zinc-400 mx-auto text-center mt-4">
-        Optionally add information about the missing piece to help our AI find the best match!
-      </p>
-          <div className="grid w-full gap-2">
-      <Textarea placeholder="Type your prompt here." />
-      <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer">Generate Outfit</Button>
-    </div>
-
-      </div>
+      
+      <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer mt-6"><FaWandMagicSparkles className="" />Generate Outfit</Button>
+    
+      </motion.div>
     );
   }
+
+  const outfitGenerator = () => {
+
+    
+    return ( 
+
+      <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }} className="flex flex-col items-center mx-auto shadow-lg  bg-zinc-50 font-sans dark:bg-black  rounded-lg p-10">
+                <IoArrowBackCircleOutline className="self-start text-2xl relative -left-5 -top-5 hover:cursor-pointer hover:opacity-75" onClick={() => setGeneratorVisible(false)} />
+
+        <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-50">The AI Outfit Builder</h2>
+          <p className=" flex max-w-xs text-lg leading-8 text-zinc-600 dark:text-zinc-400 mx-auto text-center">
+          Tell us what you want and let our AI find the best fit for you!
+        </p>
+
+       
+
+      
+          <div className="grid w-full gap-2">
+      <Textarea placeholder="Type your prompt here." className="mt-6" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+      <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer"><FaWandMagicSparkles className="" /> Generate Outfit</Button>
+    </div>
+      </motion.div>
+    );
+  }
+
+  
 
   return (
     <div className="flex min-h-screen h-screen items-center justify-center bg-amber-50 font-sans">
       <main className="flex flex-1 min-h-screen h-full  w-full max-w-7xl flex-col  bg-amber-50 dark:bg-black sm:items-start rounded-lg">
-        {/* <h2 className="flex max-w-xs text-3xl font-semibold leading-10 tracking-tight mx-auto text-black dark:text-zinc-50  text-center">
+        
+        <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }} className={`${completerVisible || generatorVisible ? "hidden" : ""} flex flex-1 min-h-screen h-full  w-full max-w-7xl flex-col  bg-amber-50 dark:bg-black sm:items-start rounded-lg`}>
+        <h2 className="flex max-w-xs text-3xl font-semibold leading-10 tracking-tight mx-auto text-black dark:text-zinc-50  text-center">
           Complete or Build an Outfit
         </h2>
         <p className=" flex max-w-xs text-lg leading-8 text-zinc-600 dark:text-zinc-400 mx-auto text-center">
           Powered by AI
         </p>
-        <div className="flex flex-col text-base font-medium sm:flex-row w-full h-1/2 sm:w-6/10 sm:mx-auto">
-        <button className="flex shadow-[5px_5px_0px_rgba(101,163,13,1)] w-8/10 h-1/2 mx-auto max-w-xs text-base items-center justify-center  bg-gradient-to-tr from-amber-300  to-amber-400  rounded-lg
-         hover:cursor-pointer hover:opacity-75 hover:shadow-[3px_3px_0px_rgba(101,163,13,1)]  transition-colors transition-shadow mt-10">
+        <div className="flex flex-col text-base font-medium xl:flex-row w-full h-1/2 sm:w-6/10 sm:mx-auto">
+        <button className="flex shadow-[5px_5px_0px_rgba(0,0,0,1)] w-8/10 h-1/2 mx-auto max-w-xs text-base items-center justify-center  bg-gradient-to-tr from-amber-300  to-amber-400  rounded-lg
+         hover:cursor-pointer hover:opacity-75 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]  transition-colors transition-shadow mt-10 " onClick={() => setCompleterVisible(true)}>
             <FaCamera className="mr-2" /> Complete your outfit
         </button>
 
-        <button className="flex shadow-[5px_5px_0px_rgba(101,163,13,1)] w-8/10 h-1/2 mx-auto max-w-xs text-base items-center justify-center  bg-gradient-to-tr from-amber-300  to-amber-400 rounded-lg
-         hover:cursor-pointer hover:opacity-75 hover:shadow-[3px_3px_0px_rgba(101,163,13,1)]  transition-colors transition-shadow mt-10">
+        <button className="flex shadow-[5px_5px_0px_rgba(0,0,0,1)] w-8/10 h-1/2 mx-auto max-w-xs text-base items-center justify-center  bg-gradient-to-tr from-amber-300  to-amber-400 rounded-lg
+         hover:cursor-pointer hover:opacity-75 hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]  transition-colors transition-shadow mt-10" onClick={() => setGeneratorVisible(true)}>
             <FaWandMagicSparkles className="mr-2" /> Start from scratch...
         </button>
-        </div> */}
-
-        {outfitCompleter()}
+        </div>
+    </motion.div>
+            {generatorVisible && outfitGenerator()}
+        {completerVisible && outfitCompleter()}
 
       </main>
+
+      
+
     </div>
+  );
+}
+
+function ClothingImageCategory({ img }: { img: string }) {
+  const [category, setCategory] = useState<string>("");
+
+  useEffect(() => {
+    console.log("category selected: ", category);
+  }, [category]);
+
+  return (
+    <div className="flex flex-row items-center mx-auto ">
+        <Image alt="clothing item" src={img} className="w-32 h-32 object-cover" width={40} height={40} />
+        <Select value={category} onValueChange={setCategory} >
+        <SelectTrigger className="w-[150px] bg-white ml-4" >
+          <SelectValue placeholder="Category" />
+        </SelectTrigger>
+        <SelectContent className="bg-white">
+          <SelectItem value="topwear">Topwear</SelectItem>
+          <SelectItem value="bottomwear">Bottomwear</SelectItem>
+          <SelectItem value="footwear">Footwear</SelectItem>
+          <SelectItem value="accessories">Accessories</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
   );
 }
 
