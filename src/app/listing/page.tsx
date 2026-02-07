@@ -23,8 +23,8 @@ export default function Listing() {
   const [productName, setProductName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [price, setPrice] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
   const [gender, setGender] = useState<string>("");
-  
   const [posting, setPosting] = useState(false);
   const [postStatus, setPostStatus] = useState<string>('');
 
@@ -128,17 +128,19 @@ export default function Listing() {
       const extractedDescription = result.description || '';
       const extractedPrice = result.price?.toString() || '';
       const extractedGender = result.gender || '';
-      
+      const extractedCategory = result.category || '';
       console.log('Extracted fields:', {
         productName: extractedProductName,
         description: extractedDescription,
         price: extractedPrice,
+        category: extractedCategory,
         gender: extractedGender
       });
       
       setProductName(extractedProductName);
       setDescription(extractedDescription);
       setPrice(extractedPrice);
+      setCategory(extractedCategory);
       setGender(extractedGender);
       
       
@@ -151,7 +153,7 @@ export default function Listing() {
   };
 
   const handlePostListing = async () => {
-    if (!productName || !description || !price || !gender || !responseData?.imageUrl) {
+    if (!productName || !description || !price || !category || !gender || !responseData?.imageUrl) {
       setPostStatus('Please fill in all required fields');
       return;
     }
@@ -166,6 +168,7 @@ export default function Listing() {
         Price: parseFloat(price),
         Gender: gender,
         ImageUrl: responseData.imageUrl,
+        Category: category
       };
 
 
@@ -302,7 +305,7 @@ export default function Listing() {
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-tr from-amber-300 to-amber-400 text-black font-semibold rounded-lg shadow-md hover:opacity-75 transition-all duration-200"
+              className="cursor-pointer inline-flex items-center px-6 py-3 bg-gradient-to-tr from-amber-300 to-amber-400 text-black font-semibold rounded-lg shadow-md hover:opacity-75 transition-all duration-200"
             >
               <FaImage className="mr-2" />
               Browse Files
@@ -360,7 +363,7 @@ export default function Listing() {
                     Processing...
                   </>
                 ) : (
-                    <div className="mr-2" >
+                    <div className="mr-2 cursor-pointer" >
                     Continue
                   </div>
                 )}
@@ -373,11 +376,12 @@ export default function Listing() {
                   setProductName('');
                   setDescription('');
                   setPrice('');
+                  setCategory('');
                   setGender('');
                   setPostStatus('');
                 }}
                 disabled={uploading}
-                className="px-8 py-3 bg-zinc-800 hover:bg-zinc-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                className="cursor-pointer px-8 py-3 bg-zinc-800 hover:bg-zinc-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all duration-200"
               >
                 Clear
               </button>
@@ -396,8 +400,8 @@ export default function Listing() {
             transition={{ duration: 0.6 }}
             className="mt-8 bg-zinc-50 shadow-[5px_5px_0px_rgba(0,0,0,1)] rounded-lg p-8"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <h3 className="text-2xl font-semibold text-gray-800">Edit Listing Information</h3>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <h3 className="text-center text-2xl font-semibold text-gray-800">Edit Listing Information</h3>
             </div>
             
             <div className="space-y-6">
@@ -425,7 +429,23 @@ export default function Listing() {
                   placeholder="Enter price"
                 />
               </div>
-
+            {/* Category */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                <Select value={category} onValueChange={(e) => setCategory(e)}>
+                  <SelectTrigger className="w-full bg-white shadow-[3px_3px_0px_rgba(0,0,0,1)]">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="Topwear">Topwear</SelectItem>
+                    <SelectItem value="Bottomwear">Bottomwear</SelectItem>
+                    <SelectItem value="Footwear">Footwear</SelectItem>
+                    <SelectItem value="Accessories">Accessories</SelectItem>
+                    <SelectItem value="Belts">Belts</SelectItem>
+                    <SelectItem value="Watches">Watches</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               {/* Gender */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Gender</label>
@@ -457,8 +477,8 @@ export default function Listing() {
               <div className="flex gap-3 justify-center pt-4">
                 <button
                   onClick={handlePostListing}
-                  disabled={posting || !productName || !description || !price || !gender}
-                  className="inline-flex items-center px-8 py-3 bg-gradient-to-tr from-amber-300 to-amber-400 hover:opacity-75 disabled:bg-gray-400 disabled:cursor-not-allowed text-black font-semibold rounded-lg shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all duration-200"
+                  disabled={posting || !productName || !description || !price || !category}
+                  className="cursor-pointer inline-flex items-center px-8 py-3 bg-gradient-to-tr from-amber-300 to-amber-400 hover:opacity-75 disabled:bg-gray-400 disabled:cursor-not-allowed text-black font-semibold rounded-lg shadow-[5px_5px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all duration-200"
                 >
                   {posting ? (
                     <>

@@ -5,6 +5,7 @@ import { IoSearchSharp } from "react-icons/io5";
 import { FaChevronDown } from "react-icons/fa";
 import { FaCamera } from "react-icons/fa6";
 import Link from "next/link";
+import { useCart } from "@/hooks/useCart";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,7 +25,7 @@ import { useState, useRef, useEffect } from "react";
 export function AvatarWithBadge() {
     return (
         <Avatar className="cursor-pointer hover:ring-2 hover:ring-[#fc934d] transition-all duration-300">
-            <AvatarImage src="https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg" alt="@shadcn" />
+            <AvatarImage src="https://upload.wikimedia.org/wikipedia/commons/9/96/University_of_Illinois_at_Chicago_circle_logo.svg" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
         </Avatar>
     )
@@ -49,6 +50,7 @@ interface Product {
 }
 
 const Header = () => {
+    const { cartCount } = useCart();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchCategory, setSearchCategory] = useState("");
     const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -368,7 +370,14 @@ const Header = () => {
                 <Link href="/outfitbuilder" suppressHydrationWarning className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
                 <Link href="/explore" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</Link>
                 <Link href="listing" className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</Link>
-                <Link href="/checkout"><FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" /></Link>
+                <Link href="/cart" className="relative">
+                    <FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {cartCount}
+                        </span>
+                    )}
+                </Link>
                 <Link href="/profile">
                     <AvatarWithBadge />
                 </Link>
