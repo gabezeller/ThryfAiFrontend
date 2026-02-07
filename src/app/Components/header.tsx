@@ -209,7 +209,7 @@ const Header = () => {
                                 <FaChevronDown />
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-50 drop-shadow" align="start" alignOffset={-10}>
+                        <DropdownMenuContent className="w-50 drop-shadow z-1000" align="start" alignOffset={-10}>
                             <DropdownMenuItem className="cursor-pointer">Topwear</DropdownMenuItem>
                             <DropdownMenuItem className="cursor-pointer">Bottomwear</DropdownMenuItem>
                             <DropdownMenuItem className="cursor-pointer">Footwear</DropdownMenuItem>
@@ -321,7 +321,8 @@ const Header = () => {
                                 </div>
                             ) : searchResults.length > 0 ? (
                                 searchResults.map((product) => (
-                                    <div
+                                    <Link
+                                        href={`/listing/${product.id}`}
                                         key={product.id}
                                         onClick={() => setShowResults(false)}
                                         className="p-3 hover:bg-amber-50 flex items-center gap-4 cursor-pointer transition-all duration-200 group/item border-b border-gray-50 last:border-none"
@@ -344,7 +345,7 @@ const Header = () => {
                                                 <span className="text-[10px] px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">{product.color}</span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))
                             ) : (
                                 <div className="p-8 text-center flex flex-col items-center gap-2">
@@ -363,7 +364,7 @@ const Header = () => {
                 <Link href="/outfitbuilder" suppressHydrationWarning className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
                 <Link href="/explore" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</Link>
                 <Link href="listing" className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</Link>
-                <FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" />
+                <Link href="/checkout"><FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" /></Link>
                 <Link href="/profile">
                     <AvatarWithBadge />
                 </Link>
