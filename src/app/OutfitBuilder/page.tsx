@@ -56,6 +56,40 @@ export default function OutfitBuilder() {
   const [generatorVisible, setGeneratorVisible] = useState<boolean>(false);
   const [completerVisible, setCompleterVisible] = useState<boolean>(false);
 
+  const [imageCategories, setImageCategories] = useState<Map<string, string>>(new Map());
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // ADD GENDER DROP DOWN
+  const [gender, setGender] = useState<string>("");
+
+  interface Product {
+    id: number;
+    externalId: string;
+    productName: string;
+    gender: string;
+    masterCategory: string;
+    category: string;
+    fashionCategory: string;
+    color: string;
+    season: string;
+    year: number;
+    usage: string;
+    description: string;
+    imageUrl: string;
+    metadata: string;
+    brand: string;
+    price: number;
+}
+
+  const updateMap = (key: string, value: string) => {
+    setImageCategories(prev => new Map(prev).set(key, value));
+  }
+
+  useEffect(() => {
+    console.log(imageCategories);
+  }, [imageCategories]);
+
   const onImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     setImages(event.target.files);
   };
@@ -68,6 +102,50 @@ export default function OutfitBuilder() {
     const previewUrls = files.map(file => URL.createObjectURL(file));
     setPreviews(previewUrls);
   };
+
+async function handleCompleter(): Promise<Product[]> {
+
+
+
+  // Logic to generate outfit based on uploaded images
+  setLoading(true);
+  const queryCategories = images ? Array.from(images).map(img => (imageCategories.get(img.name))) : [];
+  console.log("Generating outfit with data:", queryCategories);
+  console.log("Images:  ", images);
+
+
+        const url = "http://localhost:5207/api/VisualOutfit/complete-look";
+        console.log("Complete look URL:", url);
+        try {
+          const response = await fetch(url, {
+        method: "POST"
+      });
+            
+          
+          
+          if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+            
+          }
+      
+          const json = await response.json();
+          console.log(json);
+          
+         
+        } catch (error) {
+          console.error("Error generating outfit:", error);
+          
+        } finally {
+          setLoading(false);
+        }
+
+        return [];
+}
+
+const handleGenerator = () => {
+  // Logic to generate outfit based on prompt
+  console.log("Generating outfit with prompt:", prompt);
+}
 
 
 
@@ -88,26 +166,35 @@ export default function OutfitBuilder() {
 
         <Field className="mb-4">
           <FieldLabel htmlFor="picture"><FaCamera /> Pictures</FieldLabel>
-          <Input id="picture" type="file" multiple onChange={handleChange} />
+          <Input id="picture" type="file" multiple onChange={onImageUpload}/>
           <FieldDescription>Upload pictures of your clothing.</FieldDescription>
         </Field>
 
-        {previews.map((src, i) => (
+        <Select value={gender} onValueChange={(e) => setGender(e)} >
+        <SelectTrigger className="w-[150px] bg-white mb-4" >
+          <SelectValue placeholder="Gender" />
+        </SelectTrigger>
+        <SelectContent className="bg-white">
+          <SelectItem value="male">Male</SelectItem>
+          <SelectItem value="female">Female</SelectItem>
+          <SelectItem value="unisex">Unisex</SelectItem>
+        </SelectContent>
+      </Select>
+
+        {images && Array.from(images).map((src, i) => (
           <motion.div initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }} key={i} className="flex flex-col    mb-4">
-
-            <ClothingImageCategory img={src} />
-
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }} key={i} className="flex flex-col    mb-4">
+        
+          <ClothingImageCategory img={src} updateMap={updateMap} />
 
 
           </motion.div>
 
         ))}
-
-
-        <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer mt-6"><FaWandMagicSparkles className="" />Generate Outfit</Button>
-
+      
+      <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer mt-6" onClick={handleCompleter}><FaWandMagicSparkles className="" />Generate Outfit</Button>
+    
       </motion.div>
     );
   }
@@ -129,12 +216,11 @@ export default function OutfitBuilder() {
         </p>
 
 
-
-
-        <div className="grid w-full gap-2">
-          <Textarea placeholder="Type your prompt here." className="mt-6" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
-          <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer"><FaWandMagicSparkles className="" /> Generate Outfit</Button>
-        </div>
+      
+          <div className="grid w-full gap-2">
+      <Textarea placeholder="Type your prompt here." className="mt-6" value={prompt} onChange={(e) => setPrompt(e.target.value)} />
+      <Button className="bg-gradient-to-tr from-amber-300  to-amber-400 text-black hover:opacity-70 hover:cursor-pointer" onClick={handleGenerator}><FaWandMagicSparkles className="" /> Generate Outfit</Button>
+    </div>
       </motion.div>
     );
   }
@@ -243,17 +329,24 @@ export default function OutfitBuilder() {
   );
 }
 
-function ClothingImageCategory({ img }: { img: string }) {
+function ClothingImageCategory({ img, updateMap }: { img: File, updateMap: (key: string, value: string) => void }) {
   const [category, setCategory] = useState<string>("");
 
+  const handleValueChange = (value: string) => {
+    // Call both functions inside the handler
+    updateMap(img.name, value);
+    setCategory(value);
+  };
+
+
   useEffect(() => {
-    console.log("category selected: ", category);
+    
   }, [category]);
 
   return (
     <div className="flex flex-row items-center mx-auto ">
-      <Image alt="clothing item" src={img} className="w-32 h-32 object-cover" width={40} height={40} />
-      <Select value={category} onValueChange={setCategory} >
+        <Image alt="clothing item" src={URL.createObjectURL(img)} className="w-32 h-32 object-cover" width={40} height={40} />
+        <Select value={category} onValueChange={(e) => {handleValueChange(e)}} >
         <SelectTrigger className="w-[150px] bg-white ml-4" >
           <SelectValue placeholder="Category" />
         </SelectTrigger>
