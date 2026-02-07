@@ -5,6 +5,7 @@ import { IoSearchSharp } from "react-icons/io5";
 import { FaChevronDown } from "react-icons/fa";
 import { FaCamera } from "react-icons/fa6";
 import Link from "next/link";
+import { useCart } from "@/hooks/useCart";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -49,6 +50,7 @@ interface Product {
 }
 
 const Header = () => {
+    const { cartCount } = useCart();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchCategory, setSearchCategory] = useState("");
     const [searchResults, setSearchResults] = useState<Product[]>([]);
@@ -368,7 +370,14 @@ const Header = () => {
                 <Link href="/outfitbuilder" suppressHydrationWarning className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
                 <Link href="/explore" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</Link>
                 <Link href="listing" className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</Link>
-                <Link href="/checkout"><FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" /></Link>
+                <Link href="/cart" className="relative">
+                    <FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                            {cartCount}
+                        </span>
+                    )}
+                </Link>
                 <Link href="/profile">
                     <AvatarWithBadge />
                 </Link>
