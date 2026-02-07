@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {ScrollArea} from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 
@@ -119,7 +119,7 @@ export default function OutfitBuilder() {
     console.log("Images:  ", images);
 
 
-    const url = "http://localhost:5207/api/VisualOutfit/complete-look";
+    const url = "http://50.217.45.185/api/VisualOutfit/complete-look";
     console.log("Complete look URL:", url);
     try {
       const response = await fetch(url, {
@@ -158,7 +158,7 @@ export default function OutfitBuilder() {
     console.log("Generating outfit with vibe:", prompt, "and gender:", gender);
 
     try {
-      const url = `http://localhost:5207/api/OutfitBuilder?vibe=${encodeURIComponent(prompt)}&gender=${gender}`;
+      const url = `http://50.217.45.185/api/OutfitBuilder?vibe=${encodeURIComponent(prompt)}&gender=${gender}`;
       console.log("Outfit Builder URL:", url);
 
       const response = await fetch(url, {
@@ -172,13 +172,13 @@ export default function OutfitBuilder() {
       const json: Product[] = await response.json();
       console.log("Generated outfit:", json);
       setOutfitResults(json);
-      
+
 
       setGeneratorVisible(false);
-      
+
       setResultsVisible(true);
-      
-      
+
+
 
     } catch (error) {
       console.error("Error generating outfit:", error);
@@ -295,33 +295,33 @@ export default function OutfitBuilder() {
           </Button>
         </div>
 
-  
+
       </motion.div>
     );
   }
 
   const resultsSection = () => {
-    
+
     return (
-        // {/* Results Section */}
-        outfitResults.length > 0  && (
-          // <ScrollArea className="h-full w-full">
-          <div className="flex flex-col items-center h-full w-full ">
+      // {/* Results Section */}
+      outfitResults.length > 0 && (
+        // <ScrollArea className="h-full w-full">
+        <div className="flex flex-col items-center h-full w-full ">
 
-            <h3 className="ax-w-xs text-5xl font-bold leading-10 tracking-tight mx-auto mb-10 text-black dark:text-zinc-50 text-center">Your Generated Outfit</h3>
-            <div className="flex flex-col gap-4">
-                                  <IoArrowBackCircleOutline className="self-start text-2xl relative left-30 -top-18 hover:cursor-pointer hover:opacity-75" onClick={() => {setResultsVisible(false); prompt ? setGeneratorVisible(true) : setCompleterVisible(true)}} />
+          <h3 className="ax-w-xs text-5xl font-bold leading-10 tracking-tight mx-auto mb-10 text-black dark:text-zinc-50 text-center">Your Generated Outfit</h3>
+          <div className="flex flex-col gap-4">
+            <IoArrowBackCircleOutline className="self-start text-2xl relative left-30 -top-18 hover:cursor-pointer hover:opacity-75" onClick={() => { setResultsVisible(false); prompt ? setGeneratorVisible(true) : setCompleterVisible(true) }} />
 
-              
-              {outfitResults.map((product, index) => (
-                <ArticleTile idx={index} key={product.id} product={product} />
-              ))}
-              
-            </div>
+
+            {outfitResults.map((product, index) => (
+              <ArticleTile idx={index} key={product.id} product={product} />
+            ))}
+
           </div>
-          // </ScrollArea>
-        )
-      );
+        </div>
+        // </ScrollArea>
+      )
+    );
   };
 
   const clearData = () => {
@@ -487,7 +487,7 @@ function ArticleTile({ product, idx }: { product: Product, idx: number }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-       className={`${idx % 2 === 0 ? "ml-40" : "mr-40"} flex flex-row bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden mb-4 max-w-2xl`}
+      className={`${idx % 2 === 0 ? "ml-40" : "mr-40"} flex flex-row bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden mb-4 max-w-2xl`}
     >
       {/* Image Section */}
       <div className="w-48 h-48 flex-shrink-0">

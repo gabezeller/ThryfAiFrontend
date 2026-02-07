@@ -14,7 +14,7 @@ export default function CheckoutPage() {
         setError(null)
 
         try {
-            const response = await fetch('http://localhost:5207/api/Purchase?productId=1&userId=global-user', {
+            const response = await fetch('http://50.217.45.185/api/Purchase?productId=1&userId=global-user', {
                 method: 'POST',
                 headers: {
                     'accept': 'text/plain'

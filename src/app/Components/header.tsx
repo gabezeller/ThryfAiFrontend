@@ -91,7 +91,7 @@ const Header = () => {
     };
 
     async function handleReverseImageSearch(file: File) {
-        const url = `http://localhost:5207/api/Discovery/visual-search`;
+        const url = `http://50.217.45.185/api/Discovery/visual-search`;
         setIsLoading(true);
         setShowResults(true);
 
@@ -125,7 +125,7 @@ const Header = () => {
     }
 
     async function handleSearch(): Promise<Product[]> {
-        const url = `http://localhost:5207/api/listing/search?search=${searchQuery}&category=${searchCategory}`;
+        const url = `http://50.217.45.185/api/listing/search?search=${searchQuery}&category=${searchCategory}`;
         setIsLoading(true);
         setShowResults(true);
         try {
