@@ -24,8 +24,52 @@ export function AvatarWithBadge() {
         </Avatar>
     )
 }
+interface Product {
+    id: number;
+    externalId: string;
+    productName: string;
+    gender: string;
+    masterCategory: string;
+    category: string;
+    fashionCategory: string;
+    color: string;
+    season: string;
+    year: number;
+    usage: string;
+    description: string;
+    imageUrl: string;
+    metadata: string;
+    brand: string;
+    price: number;
+}
 
+async function handleSearch(): Promise<Product[]> {
+    const url = "http://localhost:5207/api/Listing/search";
+    console.log("search URL:", url);
+    try {
+      const response = await fetch(url, {
+        method: "GET"
+      });
+
+
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+
+      }
+
+      const json = await response.json();
+      console.log(json);
+
+    } catch (error) {
+      console.error("Error generating outfit:", error);
+
+    }
+
+    return [];
+}
 const Header = () => {
+
     return (
         <nav className="flex pl-8 pr-8 items-center max-w-7xl mx-auto justify-between w-full text-black p-4 sm:rounded-2xl bg-gradient-to-tr from-amber-300 to-amber-400 mb-10 sm:mt-4 rounded-none mt-0 drop-shadow-sm">
             <Link href={"/"} className="hover:cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">
@@ -102,7 +146,7 @@ const Header = () => {
             <div className="flex gap-5 items-center">
                 <div className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Explore</div>
                 <Link href="/OutfitBuilder" className="text-black hover:text-white hover:cursor-pointer text-lg font-medium transition-color hover:scale-110 transition-transform duration-300 ease-in-out transform">Outfit-Builder</Link>
-                <div className="text-white hover:cursor-pointer text-lg font-medium transition-color bg-[#fc934d] rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</div>
+                <div className="hover:cursor-pointer text-lg font-medium transition-color bg-white text-black rounded-xl p-2 cursor-pointer scale-100 hover:scale-110 transition-transform duration-300 ease-in-out transform">Create Listing</div>
                 <FaShoppingCart className="text-xl text-black cursor-pointer hover:text-white hover:scale-110 transition-transform duration-300 ease-in-out transform" />
                 <AvatarWithBadge />
             </div>
